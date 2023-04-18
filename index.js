@@ -9,9 +9,7 @@ const app = {};
 
 // configurations of app
 // app.config = { port: 3000 };
-data.delete('test', 'newFile', (err) => {
-    console.log(err);
-});
+
 // server creation
 app.createServer = () => {
     const server = http.createServer(app.handleReqRes);
