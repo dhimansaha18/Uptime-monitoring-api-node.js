@@ -18,10 +18,13 @@ handler.tokenHandler = (requestProperties, callback) => {
 handler._token = {};
 
 handler._token.post = (requestProperties, callback) => {
-    const phone = typeof requestProperties.body.phone === 'string';
-    requestProperties.body.phone?.trim().length === 11 ? requestProperties.body.phone : false;
+    const phone =
+        typeof requestProperties.body.phone === 'string'
+        && requestProperties.body.phone?.trim().length === 11
+            ? requestProperties.body.phone
+            : false;
 
-    const password = typeof requestProperties.body.password === 'string';
+    const password = typeof requestProperties.body.password === 'string' &&
     requestProperties.body.password?.trim().length > 0 ? requestProperties.body.password : false;
     if (phone && password) {
         data.read('users', phone, (err1, userData) => {
@@ -60,7 +63,7 @@ handler._token.post = (requestProperties, callback) => {
 
 handler._token.get = (requestProperties, callback) => {
     // check the id if valid
-    const id = typeof requestProperties.queryStringObject.id === 'string';
+    const id = typeof requestProperties.queryStringObject.id === 'string' &&
     requestProperties.queryStringObject.id?.trim().length === 20
         ? requestProperties.queryStringObject.id
         : false;
@@ -84,7 +87,7 @@ handler._token.get = (requestProperties, callback) => {
 };
 
 handler._token.put = (requestProperties, callback) => {
-    const id = typeof requestProperties.body.id === 'string';
+    const id = typeof requestProperties.body.id === 'string' &&
     requestProperties.body.id?.trim().length === 20 ? requestProperties.body.id : false;
     const extend = !!(
         typeof requestProperties.body.extend === 'boolean' && requestProperties.body.extend === true
@@ -120,11 +123,10 @@ handler._token.put = (requestProperties, callback) => {
 
 handler._token.delete = (requestProperties, callback) => {
     // check the token if valid
-    const id =
-        typeof requestProperties.queryStringObject.id === 'string'
-        && requestProperties.queryStringObject.id.trim().length === 20
-            ? requestProperties.queryStringObject.id
-            : false;
+    const id = typeof requestProperties.queryStringObject.id === 'string' &&
+    requestProperties.queryStringObject.id.trim().length === 20
+        ? requestProperties.queryStringObject.id
+        : false;
 
     if (id) {
         // lookup the user
@@ -153,4 +155,19 @@ handler._token.delete = (requestProperties, callback) => {
         });
     }
 };
+
+handler._token.verify = (id, phone, callback) => {
+    data.read('tokens', id, (err, tokenData) => {
+        if (!err && tokenData) {
+            if (parseJSON(tokenData).phone === phone && parseJSON(tokenData).expires > Date.now()) {
+                callback(true);
+            } else {
+                callback(false);
+            }
+        } else {
+            callback(false);
+        }
+    });
+};
+
 module.exports = handler;
