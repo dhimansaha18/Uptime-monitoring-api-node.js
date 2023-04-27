@@ -112,7 +112,7 @@ handler._users.put = (requestProperties, callback) => {
         requestProperties.body.phone?.trim().length === 11
             ? requestProperties.body.phone
             : false;
-
+ 
     const firstName = typeof requestProperties.body.firstName === 'string' &&
         requestProperties.body.firstName?.trim().length > 0
             ? requestProperties.body.firstName
